@@ -81,6 +81,7 @@ class PublicUserApiTests(TestCase):
             'password': 'test-user-password123'
 
         }
+        create_user(**user_details)
 
         payload = {
             'email': user_details['email'],
@@ -91,7 +92,7 @@ class PublicUserApiTests(TestCase):
         res = self.client.post(TOKEN_URL, payload)
 
         self.assertIn('token', res.data)
-        self.assertEqual(res.status_code, res.HTTP_200_OK)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_create_token_bad_credentials(self):
         """Test returns error if credentials invalid"""
@@ -100,8 +101,8 @@ class PublicUserApiTests(TestCase):
         payload = {'email': 'test@example.com' ,'password': 'badpass'}
 
         res = self.client.post(TOKEN_URL, payload)
-        self.assertIn('token', res.data)
-        self.assertEqual(res.status_code, res.HTTP_400_BAD_REQUEST)
+        self.assertNotIn('token', res.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
     
     def test_create_token_blank_password(self):
         """Test posting a blank password returns an error"""
@@ -109,7 +110,7 @@ class PublicUserApiTests(TestCase):
         res = self.client.post(TOKEN_URL, payload)
 
         self.assertNotIn('token', res.data)
-        self.assertEqual(res.status_code, res.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
     
     def test_retrieve_user_unauthorized(self):
         """TEST authentication is required for users."""
@@ -145,7 +146,7 @@ class PrivaterUserApiTests(TestCase):
     def test_update_user_profile(self):
         """Test updating the user profile for the authenticated user."""
         payload = {'name': 'Updated name', 'password': 'newpassword123'}
-        res = self.client.post(ME_URL, payload)
+        res = self.client.patch(ME_URL, payload)
         self.user.refresh_from_db( )
         self.assertEqual(self.user.name, payload['name'])
         self.assertTrue(self.user.check_password(payload['password']))
