@@ -3,7 +3,12 @@ Sesrializers for recipe APIs
 """
 
 from rest_framework import serializers
-
+from drf_spectacular.utils import (
+    extend_schema_view,
+    extend_schema,
+    OpenApiParameter,
+    OpenApiType
+)
 from core.models import (
     Recipe,
     Tag,
@@ -89,6 +94,7 @@ class RecipeDetailSerializer(RecipeSerializer):
 
     class Meta(RecipeSerializer.Meta):
         fields = RecipeSerializer.Meta.fields + ['description']
+
 class RecipeImageSerializer(serializers.ModelSerializer):
     """Serializer for uploading images to recipes"""
 
